@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Персонажи</title>
+<style>
+body { margin:0; font-family:Arial, sans-serif; background:#111; color:white; }
+h1 { text-align:center; margin:20px 0; }
+/* Главная страница */
+.role-list { padding:0 15px; }
+.role-card {
+  background:#1e1e1e;
+  margin:10px 0;
+  padding:15px;
+  border-radius:15px;
+  cursor:pointer;
+}
+.role-card:hover { background:#2a2a2a; }
+.role-date { color:#aaa; font-size:14px; }
+.role-count { color:#ccc; font-size:12px; }
+
+/* Актёры */
+.actor-container { padding:15px; max-width:500px; margin:auto; }
+.actor-card { margin-bottom:30px; background:#1e1e1e; border-radius:15px; overflow:hidden; }
+.actor-card img { width:100%; object-fit:cover; }
+.actor-info { padding:15px; }
+.actor-info div { margin-bottom:5px; }
+.actor-info .name { font-size:20px; font-weight:600; }
+.btn { margin-top:10px; padding:12px; background:#e74c3c; border:none; border-radius:12px; width:100%; color:white; font-size:16px; cursor:pointer; }
+.btn:hover { background:#ff5c5c; }
+
+/* Видео */
+.overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:black; display:none; justify-content:center; align-items:center; z-index:10; }
+video { width:90%; height:60%; border-radius:10px; }
+.close { position:absolute; top:20px; left:20px; font-size:22px; cursor:pointer; color:white; z-index:11; }
+
+/* Назад */
+.back { margin-bottom:15px; display:inline-block; cursor:pointer; color:#aaa; }
+</style>
+</head>
+<body>
+
+<!-- Главная страница -->
+<div id="home">
+<h1>Персонажи</h1>
+<div class="role-list" id="roleList"></div>
+</div>
+
+<!-- Карточки актёров -->
+<div id="actorPage" style="display:none;">
+<div class="back" onclick="goBack()">← Назад</div>
+<div class="actor-container" id="actorContainer"></div>
+</div>
+
+<!-- Видео -->
+<div class="overlay" id="overlay">
+  <div class="close" onclick="closeVideo()">✕</div>
+  <video id="video" controls></video>
+</div>
+
+<script>
+// Данные актёров
+const data = {
+  "Медсестра":[
+    {name:"Сергиенко Анастасия", age:37, height:164, clothing:42, shoes:36, date:"25.03", img:"photos/Сергиенко.jpg", video:"videos/Сергиенко.mp4"},
+    {name:"Степанова Александра", age:27, height:172, clothing:42-44, shoes:38, date:"25.03", img:"photos/Степанова.jpg", video:"videos/Степанова.mp4"},
+    {name:"Скорохватова Екатерина", age:23, height:162, clothing:42-44, shoes:38, date:"25.03", img:"photos/Скорохватова.jpg", video:"videos/Скорохватова.mp4"},
+    {name:"Орлова Людмила", age:47, height:164, clothing:44, shoes:37, date:"25.03", img:"photos/Орлова.jpg", video:"videos/VID-20260322-WA0000.mp4"},
+    {name:"Сдобникова Лариса", age:59, height:174, clothing:48, shoes:39, date:"25.03", img:"photos/Сдобникова.jpg", video:"videos/Сдобникова.mov"},
+  ],
+  "Директор":[],
+  "Помощник Гаева":[],
+  "Подельник Свата":[]
+};
+
+const roleDates = {
+  "Медсестра":"25.03",
+  "Директор":"05.04",
+  "Помощник Гаева":"07.04",
+  "Подельник Свата":"07.04"
+};
+
+// Главная страница
+const roleList = document.getElementById('roleList');
+for(let role in data){
+  const div = document.createElement('div');
+  div.className='role-card';
+  const count = data[role].length;
+  div.innerHTML = `<strong>${role}</strong> <div class="role-date">${roleDates[role]}</div>
+                   <div class="role-count">Проб: ${count}</div>`;
+  div.onclick = ()=>openRole(role);
+  roleList.appendChild(div);
+}
+
+// Открытие актёров
+function openRole(role){
+  const list = data[role];
+  if(list.length===0){
+    alert('Проб пока нет');
+    return;
+  }
+  document.getElementById('home').style.display='none';
+  const actorPage = document.getElementById('actorPage');
+  actorPage.style.display='block';
+  const container = document.getElementById('actorContainer');
+  container.innerHTML='';
+  list.forEach(actor=>{
+    const card = document.createElement('div');
+    card.className='actor-card';
+    card.innerHTML = `
+      <img src="${actor.img}">
+      <div class="actor-info">
+        <div class="name">${actor.name}</div>
+        <div>Дата пробы: ${actor.date}</div>
+        <div>Рост: ${actor.height} см</div>
+        <div>Размер одежды: ${actor.clothing}</div>
+        <div>Размер обуви: ${actor.shoes}</div>
+        <button class="btn" onclick="playVideo('${actor.video}')">Смотреть пробу</button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// Назад
+function goBack(){
+  document.getElementById('actorPage').style.display='none';
+  document.getElementById('home').style.display='block';
+}
+
+// Видео
+function playVideo(url){
+  const video = document.getElementById('video');
+  video.src = url;
+  video.play();
+  document.getElementById('overlay').style.display='flex';
+}
+function closeVideo(){
+  const video = document.getElementById('video');
+  video.pause();
+  video.src = '';
+  document.getElementById('overlay').style.display='none';
+}
+</script>
+
+</body>
+</html>
